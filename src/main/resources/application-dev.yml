@@ -25,7 +25,7 @@ spring:
     #      none : db를 변경하지 않고 계속 사용하는 설정.
     properties:
       hibernate:
-        show_sql: true
+#        show_sql: true
         format_sql: true
         default_batch_fetch_size: 1000 #최적화 옵션 // 글로벌 로딩 전략
         # 100 개 단위로 끊어서 가지고 오겠다는 뜻.
@@ -36,10 +36,10 @@ spring:
 logging:
   level:
     org:
-      springframework:
-        jdbc: debug
+#      springframework:
+#        jdbc: debug
       hibernate:
-        SQL: DEBUG
+        SQL: debug
 #        type: trace
         type:
           descriptor:
