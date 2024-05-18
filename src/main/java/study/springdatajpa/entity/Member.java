@@ -1,30 +1,39 @@
 package study.springdatajpa.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.hibernate.annotations.BatchSize;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
 @Getter
-@Setter
 public class Member {
 
-    @Id
-    @GeneratedValue
+    @Id @GeneratedValue
+    @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "member_name")
     private String memberName;
 
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<TeamMember> teamMembers = new ArrayList<>();
+
     public Member(String memberName) {
-        this.id = id;
         this.memberName = memberName;
     }
+
+    public void addTeam(Team team) {
+        TeamMember memberTeam = new TeamMember(this, team);
+        teamMembers.add(memberTeam);
+        team.getTeamMembers().add(memberTeam);
+    }
+
+
+
 }

@@ -41,10 +41,10 @@ logging:
       hibernate:
         SQL: debug
 #        type: trace
-        type:
-          descriptor:
-            sql:
-              BasicBinder: TRACE
+#        type:
+#          descriptor:
+#            sql:
+#              BasicBinder: TRACE
         jdbc:
           bind:
             TRACE
