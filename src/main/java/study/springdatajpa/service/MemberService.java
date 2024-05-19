@@ -18,13 +18,13 @@ public class MemberService {
 //    private final MemberJpaRepository MemberRepository;
 
     @Transactional
-    public void save(Member member) {
+    public Member signUpMember(Member member) {
         memberRepository.save(member);
+        return member;
     }
 
     public Optional<Member> findById(Long id) {
         return memberRepository.findById(id);
-
     }
 
 }

@@ -21,10 +21,6 @@ public class TeamMember {
     @JoinColumn(name = "member_id")
     private Member member;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "item_id")
-//    private Item item;
-
     public TeamMember(Member member, Team team) {
         this.member = member;
         this.team = team;

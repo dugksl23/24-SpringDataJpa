@@ -3,32 +3,37 @@ package study.springdatajpa.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.hibernate.annotations.BatchSize;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Team {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "team_id")
     private Long id;
 
     @Column(name = "team_name")
     private String name;
 
-    @Column(name = "member_age")
-    private int age;
 
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<TeamMember> teamMembers = new ArrayList<>();
 
-    public void addMember(Member member) {
-        TeamMember memberTeam = new TeamMember(member, this);
-        teamMembers.add(memberTeam);
-        member.getTeamMembers().add(memberTeam);
+
+    public TeamMember addMember(Member member) {
+        TeamMember teamMember = new TeamMember(member, this);
+        teamMembers.add(teamMember);
+//        member.addTeam(this);
+        return teamMember;
     }
 
+    public Team(String name) {
+        this.name = name;
+    }
 }

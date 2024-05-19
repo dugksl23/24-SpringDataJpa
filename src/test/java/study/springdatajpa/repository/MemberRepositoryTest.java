@@ -32,10 +32,10 @@ class MemberRepositoryTest {
     void memberSaveTest() {
 
         // given...
-        Member member = new Member("USER1");
+        Member member = new Member("USER1", 00);
 
         // when...
-        memberService.save(member); // 1차 캐싱 된 entity 자동 반환.
+        memberService.signUpMember(member); // 1차 캐싱 된 entity 자동 반환.
         log.info("saved member id : {}", member.getId());
         log.info("member value : {}", member);
         Member byId = memberService.findById(member.getId()).get();
