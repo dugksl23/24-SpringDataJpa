@@ -22,7 +22,6 @@ public class TeamService {
 
     public final TeamRepository teamRepository;
     public final MemberRepository memberRepository;
-    public final TeamMemberRepository teamMemberRepository;
 
     @Transactional
     public Team createTeam(Team team) {
@@ -34,17 +33,19 @@ public class TeamService {
         return teamRepository.findById(id);
     }
 
+
     @Transactional
-    public TeamMember addMemberToTeam(Long teamId, Long memberId) {
+    public Team addMemberToTeam(Long teamId, Long memberId) {
 
-        Optional<Team> team = teamRepository.findById(teamId);
-        team.orElseThrow(() -> new IllegalArgumentException("Team does not exist"));
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new IllegalArgumentException("Team does not exist"));
 
-        Optional<Member> member = memberRepository.findById(memberId);
-        member.orElseThrow(() -> new IllegalStateException("Member with id " + memberId + " not found"));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalStateException("Member with id " + memberId + " not found"));
 
-        TeamMember save = teamMemberRepository.save(new TeamMember(member.get(), team.get()));
-        return save;
+        team.addMember(member);
+
+        return teamRepository.save(team);
     }
 
 

@@ -27,11 +27,10 @@ public class Team {
     private List<TeamMember> teamMembers = new ArrayList<>();
 
 
-    public TeamMember addMember(Member member) {
+    public void addMember(Member member) {
         TeamMember teamMember = new TeamMember(member, this);
         teamMembers.add(teamMember);
-        member.addTeam(this);
-        return teamMember;
+        member.getTeamMembers().add(teamMember);
     }
 
     public Team(String name) {

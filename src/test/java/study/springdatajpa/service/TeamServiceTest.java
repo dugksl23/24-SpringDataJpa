@@ -34,7 +34,7 @@ class TeamServiceTest {
 
     @Test
     @Transactional
-    @Commit
+//    @Commit
     void signUpMember() {
 
         // given...
@@ -73,10 +73,11 @@ class TeamServiceTest {
         Team team = new Team("team 1");
         teamService.createTeam(team);
 
-
         // when...
-        member.addTeam(team);
+//        member.addTeam(team);
+        // 객체 코드상에서 연관관계를 맺어야 cascade 옵션으로 저장이 된다.
 //        teamService.addMemberToTeam(member.getId(), team.getId());
+        memberService.addMemberToTeam(member.getId(), team.getId());
         // cascade 옵션으로 insert query 생성
 
         // then..

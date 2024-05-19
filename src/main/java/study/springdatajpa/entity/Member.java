@@ -38,16 +38,11 @@ public class Member {
     public void addTeam(Team team) {
         // 1. 조인 테이블의 entity pk 값 저장을 위해 객체 전달
         TeamMember memberTeam = new TeamMember(this, team);
-        // 2. 양방향 매핑이기에 memberTeam 을 member 에서도 저장.
-        //    member 에서도 team 을 1:다로 호출할 비지니스 로직이기에
+        // 2. 연관관계 편의를 위해서 양방향 매핑을 위해 memberTeam 조인테이블로
+        // member 와 team 을 에서도 저장.
         teamMembers.add(memberTeam);
-        // 3. 양항뱡 매핑이기에 team 에도 마찬가지로
-        // 1:다 로 호출할 비지니스 로직을 위해 둘중에 한곳에 작성하면 된다.
-        // 현재 정책상 팀에서 멤버를 추가하는 방향으로 정했다.
-
-        //==========
-        // 2024.5.19 team 엔티티에서 주석 처리 이유? 양방향 호출로 인해 무한이 된다.
-//        team.addMember(this);
+        team.getTeamMembers().add(memberTeam);
+        // 3. member 를 save() 하면, cascade 속성으로 모두 저장됨.
     }
 
     // === 연관관계 메서드 ===
