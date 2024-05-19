@@ -2,7 +2,7 @@ package study.springdatajpa.service;
 
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.springdatajpa.entity.Member;
@@ -17,6 +17,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class TeamService {
 
     public final TeamRepository teamRepository;
@@ -33,6 +34,7 @@ public class TeamService {
         return teamRepository.findById(id);
     }
 
+    @Transactional
     public TeamMember addMemberToTeam(Long teamId, Long memberId) {
 
         Optional<Team> team = teamRepository.findById(teamId);
@@ -41,7 +43,8 @@ public class TeamService {
         Optional<Member> member = memberRepository.findById(memberId);
         member.orElseThrow(() -> new IllegalStateException("Member with id " + memberId + " not found"));
 
-        return teamMemberRepository.save(new TeamMember(member.get(), team.get()));
+        TeamMember save = teamMemberRepository.save(new TeamMember(member.get(), team.get()));
+        return save;
     }
 
 

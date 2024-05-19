@@ -1,6 +1,7 @@
 package study.springdatajpa.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Member {
 
@@ -46,7 +47,15 @@ public class Member {
 
         //==========
         // 2024.5.19 team 엔티티에서 주석 처리 이유? 양방향 호출로 인해 무한이 된다.
+//        team.addMember(this);
+    }
+
+    // === 연관관계 메서드 ===
+    // 해당 객체 뿐 아니라, 상대 객체의 값도 업데이트해주어야 한다.
+    public void changeTeam(Team team){
+        this.getTeamMembers().add(new TeamMember(this, team));
         team.addMember(this);
+
     }
 
 

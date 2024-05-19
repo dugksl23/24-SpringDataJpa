@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.springdatajpa.entity.Member;
 import study.springdatajpa.entity.Team;
@@ -15,6 +16,8 @@ import study.springdatajpa.repository.TeamMemberRepository;
 import study.springdatajpa.repository.TeamRepository;
 
 import java.util.Optional;
+
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @SpringBootTest
 @Slf4j
@@ -61,7 +64,7 @@ class TeamServiceTest {
 
     @Test
     @Transactional
-    @Commit
+    @Rollback(false)
     void addMemberToTeam() {
 
         // given...
@@ -72,17 +75,27 @@ class TeamServiceTest {
 
 
         // when...
-//        team.addMember(member);
-        TeamMember teamMember = teamService.addMemberToTeam(team.getId(), member.getId());
+        member.addTeam(team);
+//        teamService.addMemberToTeam(member.getId(), team.getId());
         // cascade 옵션으로 insert query 생성
 
         // then..
         Member member1 = memberService.findById(member.getId()).get();
         Team team1 = teamService.findById(team.getId()).get();
-        TeamMember teamMember1 = teamMemberRepository.findById(teamMember.getId()).get();
-        Assertions.assertThat(member1.getId()).isEqualTo(member.getId());
-        Assertions.assertThat(team1.getId()).isEqualTo(team.getId());
-        Assertions.assertThat(teamMember1.getMember().getId()).isEqualTo(member1.getId());
-        Assertions.assertThat(teamMember1.getTeam().getId()).isEqualTo(team1.getId());
+
+        assertThat(member1.getTeamMembers().size()).isEqualTo(1);
+        TeamMember teamMember = member1.getTeamMembers().get(0);
+        assertThat(teamMember.getTeam().getId()).isEqualTo(team1.getId());
+        assertThat(teamMember.getMember().getId()).isEqualTo(member1.getId());
+
+        // Log statements to verify the data
+        log.info("member id : {}", member1.getId());
+        log.info("team member count : {}", member1.getTeamMembers().size());
+        if (!member1.getTeamMembers().isEmpty()) {
+            log.info("team id : {}", member1.getTeamMembers().get(0).getTeam().getId());
+            log.info("teamMember id : {}", member1.getTeamMembers().get(0).getId());
+        } else {
+            log.warn("Team members list is empty");
+        }
     }
 }

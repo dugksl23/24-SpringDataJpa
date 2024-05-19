@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -23,8 +23,14 @@ public class MemberService {
         return member;
     }
 
+
     public Optional<Member> findById(Long id) {
         return memberRepository.findById(id);
+    }
+
+    @Transactional
+    public Optional<Member> findByIdWithTeams(Long memberId) {
+        return memberRepository.findByIdWithTeams(memberId);
     }
 
 }

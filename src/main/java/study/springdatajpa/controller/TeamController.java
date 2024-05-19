@@ -2,19 +2,27 @@ package study.springdatajpa.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import study.springdatajpa.entity.Member;
 import study.springdatajpa.entity.Team;
+import study.springdatajpa.service.MemberService;
 import study.springdatajpa.service.TeamService;
 
 @RestController
 @RequestMapping("/teams")
 @RequiredArgsConstructor
+@Slf4j
+@Transactional
 public class TeamController {
 
     private final TeamService teamService;
+    private final MemberService memberService;
+
 
 //    @GetMapping("/add")
 //    public String createTeam() {
@@ -22,9 +30,9 @@ public class TeamController {
 //    }
 
     @PostMapping("/createTeam")
-    public String createTeam(@RequestBody Team team, BindingResult bindingResult, Model model){
+    public String createTeam(@RequestBody Team team, BindingResult bindingResult, Model model) {
 
-        if(bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             return "team/add";
         }
 
@@ -32,10 +40,19 @@ public class TeamController {
         return "redirect:/team/list";
     }
 
-    @PostMapping("/{teamId}/add/{memberId}")
+    @PostMapping("/add")
     public String addMemberToTeam(@PathVariable Long teamId, @PathVariable Long memberId) {
+
         teamService.addMemberToTeam(teamId, memberId);
         return "redirect:/team/list";
     }
+
+    @PostMapping("/{memberId}")
+    public String findByIdWithTeams(@PathVariable Long memberId, Model model) {
+        Member member1 = memberService.findByIdWithTeams(memberId).get();
+        return member1.toString();
+
+    }
+
 
 }

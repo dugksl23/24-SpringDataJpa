@@ -2,6 +2,7 @@ package study.springdatajpa.entity;
 
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Team {
 
     @Id
@@ -29,7 +30,7 @@ public class Team {
     public TeamMember addMember(Member member) {
         TeamMember teamMember = new TeamMember(member, this);
         teamMembers.add(teamMember);
-//        member.addTeam(this);
+        member.addTeam(this);
         return teamMember;
     }
 
