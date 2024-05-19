@@ -79,10 +79,10 @@ class TeamServiceTest {
         // then..
         Member member1 = memberService.findById(member.getId()).get();
         Team team1 = teamService.findById(team.getId()).get();
-        teamMemberRepository.findById(teamMember.getId()).get();
+        TeamMember teamMember1 = teamMemberRepository.findById(teamMember.getId()).get();
         Assertions.assertThat(member1.getId()).isEqualTo(member.getId());
         Assertions.assertThat(team1.getId()).isEqualTo(team.getId());
-        Assertions.assertThat(teamMember.getMember().getId()).isEqualTo(member1.getId());
-        Assertions.assertThat(teamMember.getTeam().getId()).isEqualTo(team1.getId());
+        Assertions.assertThat(teamMember1.getMember().getId()).isEqualTo(member1.getId());
+        Assertions.assertThat(teamMember1.getTeam().getId()).isEqualTo(team1.getId());
     }
 }
