@@ -12,12 +12,9 @@ import study.springdatajpa.entity.Member;
 import study.springdatajpa.entity.Team;
 import study.springdatajpa.entity.TeamMember;
 import study.springdatajpa.repository.MemberRepository;
-import study.springdatajpa.repository.TeamMemberRepository;
 import study.springdatajpa.repository.TeamRepository;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
 @Slf4j
@@ -28,9 +25,9 @@ class TeamServiceTest {
     @Autowired
     private MemberService memberService;
     @Autowired
-    private TeamMemberRepository teamMemberService;
+    private MemberRepository memberRepository;
     @Autowired
-    private TeamMemberRepository teamMemberRepository;
+    private TeamRepository teamRepository;
 
     @Test
     @Transactional
@@ -73,12 +70,16 @@ class TeamServiceTest {
         Team team = new Team("team 1");
         teamService.createTeam(team);
 
-        // when...
-//        member.addTeam(team);
-        // 객체 코드상에서 연관관계를 맺어야 cascade 옵션으로 저장이 된다.
+        // when... V1
+        // 객체 코드상에서 연관관계를 맺어야 cascade 옵션으로 저장이 되며, insert query update query 생성
+        member.addTeam(team);
+//        teamRepository.save(team);
+//        memberRepository.save(member);
+
+        // when... V2
+//        teamRepository.save(team);
 //        teamService.addMemberToTeam(member.getId(), team.getId());
-        memberService.addMemberToTeam(member.getId(), team.getId());
-        // cascade 옵션으로 insert query 생성
+//        memberService.addMemberToTeamV2(team, member);
 
         // then..
         Member member1 = memberService.findById(member.getId()).get();

@@ -49,8 +49,18 @@ public class TeamController {
 
     @PostMapping("/{memberId}")
     public String findByIdWithTeams(@PathVariable Long memberId, Model model) {
-        Member member1 = memberService.findByIdWithTeams(memberId).get();
-        return member1.toString();
+//        Member member1 = memberService.findByIdWithTeams(memberId).get();
+
+        Member member = new Member("MEMBER1", 20);
+        Team team = new Team("team 1");
+
+//        Member member1 =
+                memberService.addMemberToTeamV2(team, member);
+
+//        return member1.toString();
+            return "dd";
+
+
 
     }
 

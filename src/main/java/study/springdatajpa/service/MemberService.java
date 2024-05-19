@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.springdatajpa.entity.Member;
 import study.springdatajpa.entity.Team;
+import study.springdatajpa.entity.TeamMember;
 import study.springdatajpa.repository.MemberJpaRepository;
 import study.springdatajpa.repository.MemberRepository;
+import study.springdatajpa.repository.TeamMemberRepository;
 import study.springdatajpa.repository.TeamRepository;
 
 import java.util.Optional;
@@ -19,6 +21,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
+    private final TeamMemberRepository teamMemberRepository;
 
     @Transactional
     public Member signUpMember(Member member) {
@@ -50,6 +53,13 @@ public class MemberService {
         return memberRepository.save(member);
     }
 
+
+
+    @Transactional
+    public Member addMemberToTeamV2(Team team, Member member) {
+        member.addTeam(team);
+        return memberRepository.save(member);
+    }
 
 
 }
