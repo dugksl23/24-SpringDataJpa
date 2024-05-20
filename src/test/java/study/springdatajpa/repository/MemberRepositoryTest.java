@@ -15,6 +15,7 @@ import study.springdatajpa.service.MemberService;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 
 @SpringBootTest
@@ -136,6 +137,25 @@ class MemberRepositoryTest {
 
         Assertions.assertThat(membersByTeamId).hasSize(3);
 
+    }
+
+    @Test
+    void returnParameterTest(){
+
+        Member member = new Member("MEMBER1", 20);
+        Member member1 = new Member("MEMBER2", 21);
+        Member member2 = new Member("MEMBER3", 21);
+        Member member3 = new Member("MEMBER4", 21);
+        List<Member> list1 = Arrays.asList(member, member1, member2, member3);
+        memberRepository.saveAll(list1);
+
+        Member byMemberName = memberRepository.findByMemberName(member.getMemberName());
+        List<Member> allByAge = memberRepository.findAllByAge(21);
+        Optional<List<Member>> byAge = memberRepository.findByAge(21);
+
+        Assertions.assertThat(byMemberName.getMemberName()).isEqualTo(member.getMemberName());
+        Assertions.assertThat(allByAge).hasSize(3);
+        Assertions.assertThat(byAge.get().get(0).getAge()).isEqualTo(21);
 
     }
 }
