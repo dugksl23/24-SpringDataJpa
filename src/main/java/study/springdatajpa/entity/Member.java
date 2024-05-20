@@ -15,7 +15,7 @@ import java.util.List;
 @Getter
 @NamedQuery(
         name="Member.findByMemberName",
-        query="select m from Member m where m.memberName = :username")
+        query="select m from Member m where m.memberName = :memberName")
 public class Member {
 
     @Id

@@ -1,12 +1,16 @@
 package study.springdatajpa.repository;
 
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 import study.springdatajpa.entity.Member;
+import study.springdatajpa.entity.Team;
+import study.springdatajpa.repository.query.MemberQueryDto;
 import study.springdatajpa.service.MemberService;
 
 import java.util.Arrays;
@@ -21,6 +25,8 @@ class MemberRepositoryTest {
     private MemberService memberService;
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private TeamRepository teamRepository;
 
     @Test
     @Transactional
@@ -57,7 +63,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    void findMemberTest(){
+    void findMemberTest() {
 
         Member member = new Member("USER1", 00);
         Member member1 = new Member("USER1", 01);
@@ -83,10 +89,53 @@ class MemberRepositoryTest {
 
 
     @Test
-    void findMemberBy(){
-//        memberRepository.findMemberBy();
-//        memberRepository.findAll();
+    void findMemberBy() {
+
+        Member member = new Member("USER1", 00);
+        Member member1 = new Member("USER1", 01);
+        Member member2 = new Member("USER123", 02);
+        List<Member> list = Arrays.asList(member1, member, member2);
+        memberRepository.saveAll(list);
+
+        memberRepository.findMemberBy();
+        memberRepository.findAll();
         memberRepository.findTop100MemberBy();
-        memberRepository.findByMemberName("member");
+        memberRepository.findByMemberName("USER1");
+        List<String> allByMemberName = memberRepository.findAllByMemberName();
+
+        Assertions.assertThat(allByMemberName).hasSize(3);
+    }
+
+
+    @Test
+    @Transactional
+    @Commit
+    void findAllByMemberDto() {
+
+        // given...
+        Member member = new Member("MEMBER1", 20);
+        Member member1 = new Member("MEMBER2", 21);
+        Member member2 = new Member("MEMBER3", 21);
+        Member member3 = new Member("MEMBER4", 21);
+        List<Member> list = Arrays.asList(member1, member, member2, member3);
+        memberRepository.saveAll(list);
+
+        Team team = new Team("team 1");
+        Team team1 = new Team("team 2");
+        Team team2 = new Team("team 3");
+        List<Team> list1 = Arrays.asList(team1, team2, team);
+        teamRepository.saveAll(list1);
+
+        member.addTeam(team);
+        member1.addTeam(team);
+        member2.addTeam(team);
+        member3.addTeam(team1);
+
+
+        List<MemberQueryDto> membersByTeamId = memberRepository.findMembersByTeamId(team.getId());
+
+        Assertions.assertThat(membersByTeamId).hasSize(3);
+
+
     }
 }
