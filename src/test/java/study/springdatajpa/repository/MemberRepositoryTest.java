@@ -2,9 +2,12 @@ package study.springdatajpa.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +19,8 @@ import study.springdatajpa.service.MemberService;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 @SpringBootTest
@@ -140,7 +145,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    void returnParameterTest(){
+    void returnParameterTest() {
 
         Member member = new Member("MEMBER1", 20);
         Member member1 = new Member("MEMBER2", 21);
@@ -158,4 +163,126 @@ class MemberRepositoryTest {
         Assertions.assertThat(byAge.get().get(0).getAge()).isEqualTo(21);
 
     }
+
+
+    /**
+     * Paging and Sorting Test
+     */
+    @Test
+    @Transactional
+    @Commit
+    void findByAgeWithPaging() {
+
+
+        List<Member> collect = IntStream.rangeClosed(1, 31)
+                .mapToObj(i -> {
+                    Member member = new Member("MEMBER" + i, i);
+                    memberRepository.save(member);
+                    Team team = new Team("team" + i);
+                    teamRepository.save(team);
+                    member.addTeam(team);
+                    return member;
+                })
+                .collect(Collectors.toList());
+
+        int currentPage = 0;
+        int offset = 0;
+        int limit = 10;
+
+        Page<Member> byAgeWithPaging = memberService.findAllByPaging(currentPage, limit);
+        log.info("========= total ==========");
+        log.info("total content count : {}", byAgeWithPaging.getTotalElements());
+        log.info("total page : {}", byAgeWithPaging.getTotalPages());
+
+        log.info("========= Current request ==========");
+        log.info("current request total size (limit) : {}", byAgeWithPaging.getSize());
+        log.info("current page Number : {}", byAgeWithPaging.getNumber());
+        log.info("first page ?: {}", byAgeWithPaging.isFirst());
+        log.info("next page ? : {}", byAgeWithPaging.hasNext());
+
+        /**
+         *  === page　메서드 검증
+         * @int requestCurrentPage = 0
+         * @limit 10
+         * ==== Total ====
+         * 1. Total content count : getTotalElements();
+         * 2. Total page : getTotalPages();
+         * ==== Current Request ====
+         * 3. total page count (limit) : getSize();
+         * 4. Current Page Number : getNumber();
+         */
+        Assertions.assertThat(byAgeWithPaging.getTotalElements()).isEqualTo(31);
+        Assertions.assertThat(byAgeWithPaging.getTotalPages()).isEqualTo(4);
+        Assertions.assertThat(byAgeWithPaging.getSize()).isEqualTo(10);
+        Assertions.assertThat(byAgeWithPaging.getNumber()).isEqualTo(0);
+        Assertions.assertThat(byAgeWithPaging.isFirst()).isEqualTo(true);
+        Assertions.assertThat(byAgeWithPaging.hasNext()).isEqualTo(true);
+
+        byAgeWithPaging.getContent().stream().forEach(content -> {
+            log.info("page : {}, content number : {}", byAgeWithPaging.getNumber(), content.getAge());
+        });
+
+    }
+
+    /**
+     * Paging and Sorting Test
+     */
+    @Test
+    @Transactional
+    @Commit
+    void findMemberWithPagingToDto() {
+
+
+        IntStream.rangeClosed(1, 31)
+                .mapToObj(i -> {
+                    Member member = new Member("MEMBER" + i, i);
+                    memberRepository.save(member);
+                    Team team = new Team("team" + i);
+                    teamRepository.save(team);
+                    member.addTeam(team);
+                    return member;
+                })
+                .collect(Collectors.toList());
+
+        int currentPage = 0;
+        int offset = 0;
+        int limit = 10;
+
+        Page<Member> byAgeWithPaging = memberService.findAllByPaging(currentPage, limit);
+        Page<MemberQueryDto> map = byAgeWithPaging.map(member -> new MemberQueryDto(member.getId(), member.getMemberName(), member.getAge()));
+        log.info("========= total ==========");
+        log.info("total content count : {}", map.getTotalElements());
+        log.info("total page : {}", map.getTotalPages());
+
+        log.info("========= Current request ==========");
+        log.info("current request total size (limit) : {}", map.getSize());
+        log.info("current page Number : {}", map.getNumber());
+        log.info("first page ?: {}", map.isFirst());
+        log.info("next page ? : {}", map.hasNext());
+
+        /**
+         *  === page　메서드 검증
+         * @int requestCurrentPage = 0
+         * @limit 10
+         * ==== Total ====
+         * 1. Total content count : getTotalElements();
+         * 2. Total page : getTotalPages();
+         * ==== Current Request ====
+         * 3. total page count (limit) : getSize();
+         * 4. Current Page Number : getNumber();
+         */
+        Assertions.assertThat(map.getTotalElements()).isEqualTo(31);
+        Assertions.assertThat(map.getTotalPages()).isEqualTo(4);
+        Assertions.assertThat(map.getSize()).isEqualTo(10);
+        Assertions.assertThat(map.getNumber()).isEqualTo(0);
+        Assertions.assertThat(map.isFirst()).isEqualTo(true);
+        Assertions.assertThat(map.hasNext()).isEqualTo(true);
+
+        map.getContent().stream().forEach(content -> {
+            log.info("page : {}, content number : {}", byAgeWithPaging.getNumber(), content.getAge());
+        });
+
+
+    }
+
 }

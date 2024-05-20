@@ -36,7 +36,6 @@ class MemberJpaRepositoryTest {
         List<Member> byPage = memberJpaRepository.findByPage(age, offset, limit);
         Long l = memberJpaRepository.totalCount(age);
         Assertions.assertEquals(byPage.size(), l);
-
-
     }
+
 }

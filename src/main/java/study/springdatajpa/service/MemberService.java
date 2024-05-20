@@ -2,15 +2,18 @@ package study.springdatajpa.service;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.springdatajpa.entity.Member;
 import study.springdatajpa.entity.Team;
-import study.springdatajpa.entity.TeamMember;
-import study.springdatajpa.repository.MemberJpaRepository;
 import study.springdatajpa.repository.MemberRepository;
 import study.springdatajpa.repository.TeamMemberRepository;
 import study.springdatajpa.repository.TeamRepository;
+import study.springdatajpa.repository.query.MemberQueryDto;
 
 import java.util.Optional;
 
@@ -54,12 +57,16 @@ public class MemberService {
     }
 
 
-
     @Transactional
     public Member addMemberToTeamV2(Team team, Member member) {
         member.addTeam(team);
         return memberRepository.save(member);
     }
 
+
+    public Page<Member> findAllByPaging(int currentPage, int limit) {
+        PageRequest pageRequest = PageRequest.of(currentPage, limit, Sort.by(Sort.Direction.ASC, "id"));
+        return memberRepository.findAll(pageRequest);
+    }
 
 }
