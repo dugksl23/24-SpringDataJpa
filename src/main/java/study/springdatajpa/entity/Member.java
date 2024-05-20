@@ -13,6 +13,9 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@NamedQuery(
+        name="Member.findByMemberName",
+        query="select m from Member m where m.memberName = :username")
 public class Member {
 
     @Id

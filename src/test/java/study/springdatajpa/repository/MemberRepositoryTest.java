@@ -1,20 +1,16 @@
 package study.springdatajpa.repository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.springdatajpa.entity.Member;
 import study.springdatajpa.service.MemberService;
 
-import java.beans.Transient;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Arrays;
+import java.util.List;
 
 
 @SpringBootTest
@@ -23,6 +19,8 @@ class MemberRepositoryTest {
 
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Test
     @Transactional
@@ -51,4 +49,44 @@ class MemberRepositoryTest {
 
     }
 
+
+    @Test
+    void memberFindByIdTest() {
+        log.info("memberRepository Value : {}", memberRepository.getClass());
+        log.info("member count : {}", memberRepository.count());
+    }
+
+    @Test
+    void findMemberTest(){
+
+        Member member = new Member("USER1", 00);
+        Member member1 = new Member("USER1", 01);
+        Member member2 = new Member("USER123", 02);
+        List<Member> list = Arrays.asList(member1, member, member2);
+
+        memberRepository.saveAll(list);
+        memberRepository.findByMemberNameAfter(member.getMemberName()).forEach(member3 -> {
+            log.info("member name : {}", member3.getMemberName());
+            log.info("member age : {}", member3.getAge());
+        });
+        memberRepository.findByMemberNameContaining(member.getMemberName());
+//                .forEach(member3 -> {
+//            log.info("member name : {}", member3.getMemberName());
+//            log.info("member age : {}", member3.getAge());
+//        });
+//        memberRepository.findByMemberNameAndAgeGreaterThan(member.getMemberName(), member.getAge()).forEach(member3 -> {
+//            log.info("member name : {}", member3.getMemberName());
+//            log.info("member age : {}", member3.getAge());
+//        });
+
+    }
+
+
+    @Test
+    void findMemberBy(){
+//        memberRepository.findMemberBy();
+//        memberRepository.findAll();
+        memberRepository.findTop100MemberBy();
+        memberRepository.findByMemberName("member");
+    }
 }
