@@ -29,6 +29,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     public List<Member> findMemberBy();
 
     public List<Member> findTop100MemberBy();
+    public List<Member> findFirst100MemberBy();
 
 
 //    @Query(name = "Member.findByMemberName")
@@ -55,7 +56,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     public Optional<List<Member>> findByAge(@Param("age") Integer age);
 
 
-    @Query(value = "select m from Member m left join m.teamMembers tm join tm.team t",
+    @Query(value = "select m from Member m" +
+            " left join fetch m.teamMembers tm" +
+            " left join fetch tm.team t",
             countQuery = "select count(m) from Member m")
     Page<Member> findAll(Pageable pageable);
 

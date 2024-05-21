@@ -36,7 +36,6 @@ class MemberRepositoryTest {
 
     @Test
     @Transactional
-//    @Rollback(false)
     @Commit
         // test code에서는 insert query 로그 안남음 -> rollback false
     void memberSaveTest() {
@@ -173,7 +172,6 @@ class MemberRepositoryTest {
     @Commit
     void findByAgeWithPaging() {
 
-
         List<Member> collect = IntStream.rangeClosed(1, 31)
                 .mapToObj(i -> {
                     Member member = new Member("MEMBER" + i, i);
@@ -185,7 +183,7 @@ class MemberRepositoryTest {
                 })
                 .collect(Collectors.toList());
 
-        int currentPage = 0;
+        int currentPage = 3;
         int offset = 0;
         int limit = 10;
 
@@ -214,18 +212,19 @@ class MemberRepositoryTest {
         Assertions.assertThat(byAgeWithPaging.getTotalElements()).isEqualTo(31);
         Assertions.assertThat(byAgeWithPaging.getTotalPages()).isEqualTo(4);
         Assertions.assertThat(byAgeWithPaging.getSize()).isEqualTo(10);
-        Assertions.assertThat(byAgeWithPaging.getNumber()).isEqualTo(0);
-        Assertions.assertThat(byAgeWithPaging.isFirst()).isEqualTo(true);
-        Assertions.assertThat(byAgeWithPaging.hasNext()).isEqualTo(true);
+        Assertions.assertThat(byAgeWithPaging.getNumber()).isEqualTo(3);
+        Assertions.assertThat(byAgeWithPaging.isFirst()).isEqualTo(false);
+        Assertions.assertThat(byAgeWithPaging.isLast()).isEqualTo(true);
+        Assertions.assertThat(byAgeWithPaging.hasNext()).isEqualTo(false);
 
-        byAgeWithPaging.getContent().stream().forEach(content -> {
-            log.info("page : {}, content number : {}", byAgeWithPaging.getNumber(), content.getAge());
-        });
+//        byAgeWithPaging.getContent().stream().forEach(content -> {
+//            log.info("page : {}, content number : {}", byAgeWithPaging.getNumber(), content.getAge());
+//        });
 
     }
 
     /**
-     * Paging and Sorting Test
+     * Paging and Sorting and toMap Test
      */
     @Test
     @Transactional
@@ -271,12 +270,24 @@ class MemberRepositoryTest {
          * 3. total page count (limit) : getSize();
          * 4. Current Page Number : getNumber();
          */
-        Assertions.assertThat(map.getTotalElements()).isEqualTo(31);
-        Assertions.assertThat(map.getTotalPages()).isEqualTo(4);
-        Assertions.assertThat(map.getSize()).isEqualTo(10);
-        Assertions.assertThat(map.getNumber()).isEqualTo(0);
-        Assertions.assertThat(map.isFirst()).isEqualTo(true);
-        Assertions.assertThat(map.hasNext()).isEqualTo(true);
+        /**
+         *  === page　메서드 검증
+         * @int requestCurrentPage = 0
+         * @limit 10
+         * ==== Total ====
+         * 1. Total content count : getTotalElements();
+         * 2. Total page : getTotalPages();
+         * ==== Current Request ====
+         * 3. total page count (limit) : getSize();
+         * 4. Current Page Number : getNumber();
+         */
+        Assertions.assertThat(byAgeWithPaging.getTotalElements()).isEqualTo(31);
+        Assertions.assertThat(byAgeWithPaging.getTotalPages()).isEqualTo(4);
+        Assertions.assertThat(byAgeWithPaging.getSize()).isEqualTo(10);
+        Assertions.assertThat(byAgeWithPaging.getNumber()).isEqualTo(3);
+        Assertions.assertThat(byAgeWithPaging.isFirst()).isEqualTo(false);
+        Assertions.assertThat(byAgeWithPaging.isLast()).isEqualTo(true);
+        Assertions.assertThat(byAgeWithPaging.hasNext()).isEqualTo(false);
 
         map.getContent().stream().forEach(content -> {
             log.info("page : {}, content number : {}", byAgeWithPaging.getNumber(), content.getAge());
