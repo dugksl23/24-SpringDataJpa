@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 
     @Query("select m from Member m join fetch m.teamMembers tm join fetch tm.team where m.id = :memberId")
     Optional<Member> findByIdWithTeams(Long memberId);
@@ -89,7 +89,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     Member findReadOnlyByMemberName(@Param("memberName") String memberName);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    List<Member> findByUsername(String name);
+//    @Lock(LockModeType.PESSIMISTIC_WRITE)
+//    List<Member> findAllByMemberName(String name);
 
 }

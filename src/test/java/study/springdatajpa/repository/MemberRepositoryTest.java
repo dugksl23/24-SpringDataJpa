@@ -394,6 +394,17 @@ class MemberRepositoryTest {
         Assertions.assertThat(readOnlyByMemberName.getMemberName()).isEqualTo(updatedMemberName);
 
     }
+
+
+    @Test
+    @Transactional
+    public void callCustom(){
+
+        // given...
+        createMember();
+        String memberName = "Member1";
+        List<Member> membersByMemberName = memberRepository.findAllByMemberName(memberName);
+    }
 }
 
 
