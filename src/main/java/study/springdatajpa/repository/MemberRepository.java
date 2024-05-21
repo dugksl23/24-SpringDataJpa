@@ -4,6 +4,7 @@ package study.springdatajpa.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -29,6 +30,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     public List<Member> findMemberBy();
 
     public List<Member> findTop100MemberBy();
+
     public List<Member> findFirst100MemberBy();
 
 
@@ -52,7 +54,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
 
     public List<Member> findAllByAge(@Param("age") Integer age);
+
     public Member findByMemberName(String memberName);
+
     public Optional<List<Member>> findByAge(@Param("age") Integer age);
 
 
@@ -61,5 +65,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             " left join fetch tm.team t",
             countQuery = "select count(m) from Member m")
     Page<Member> findAll(Pageable pageable);
+
+
+    @Modifying(clearAutomatically = true)
+    @Query("update Member m set m.age = m.age + 1 where m.age >= :age")
+    public int bulkUpdateAgePlus(@Param("age") int age);
+
 
 }

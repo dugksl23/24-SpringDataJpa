@@ -4,11 +4,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import study.springdatajpa.entity.Member;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,4 +41,23 @@ class MemberJpaRepositoryTest {
         Assertions.assertEquals(byPage.size(), l);
     }
 
+
+    @Test
+    @Transactional
+    public void bulkUpdateAgePlus() {
+        List<Member> collect = IntStream.rangeClosed(0, 30)
+                .mapToObj(i -> {
+                    Member member = new Member("user" + i, 10);
+                    return member;
+                }).collect(Collectors.toList());
+
+        memberJpaRepository.saveAll(collect);
+
+        int i = memberJpaRepository.bulkUpdateAgePlus(10);
+        // -> update age to 11
+        memberJpaRepository.findAll().forEach(member -> {
+            System.out.println("updated age :" + member.getAge());
+            Assertions.assertEquals(member.getAge(), 11);
+        });
+    }
 }

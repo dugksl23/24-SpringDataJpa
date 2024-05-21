@@ -296,4 +296,22 @@ class MemberRepositoryTest {
 
     }
 
+
+    @Test
+    @Transactional
+    @Commit
+    public void bulkUpdateAgePlus() {
+        List<Member> collect = IntStream.rangeClosed(0, 30)
+                .mapToObj(i -> {
+                    Member member = new Member("user" + i, 10);
+                    return member;
+                }).collect(Collectors.toList());
+        memberRepository.saveAll(collect);
+
+        memberRepository.bulkUpdateAgePlus(10);
+        int age = memberRepository.findById(collect.get(0).getId()).get().getAge();
+        log.info("age : {}", age);
+        Assertions.assertThat(age).isEqualTo(11);
+    }
+
 }

@@ -58,4 +58,19 @@ public class MemberJpaRepository {
                 .setParameter("age", age)
                 .getSingleResult();
     }
+
+
+    /**
+     * JPA Bulk Update
+     */
+    public int bulkUpdateAgePlus(int age) {
+        String jpql = "update Member m set m.age = m.age + 1 where m.age = :age";
+        int i = em.createQuery(jpql)
+                .setParameter("age", age)
+                .executeUpdate();
+
+        em.flush();
+        em.clear();
+        return i;
+    }
 }
