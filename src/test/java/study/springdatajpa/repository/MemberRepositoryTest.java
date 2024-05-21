@@ -1,5 +1,6 @@
 package study.springdatajpa.repository;
 
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,8 @@ class MemberRepositoryTest {
     private MemberRepository memberRepository;
     @Autowired
     private TeamRepository teamRepository;
+    @Autowired
+    private EntityManager em;
 
     @Test
     @Transactional
@@ -310,14 +313,7 @@ class MemberRepositoryTest {
     @Test
     void findMemberLazy() {
 
-        IntStream.rangeClosed(1, 30).mapToObj(i -> {
-            Member member = new Member("Member" + i, i);
-            memberRepository.save(member);
-            Team team = new Team("Team" + i);
-            teamRepository.save(team);
-            member.addTeam(team);
-            return member;
-        }).collect(Collectors.toList());
+        createMember();
 
         memberRepository.findAll().forEach(member -> {
             log.info("memberName : {}", member.getMemberName());
@@ -332,14 +328,7 @@ class MemberRepositoryTest {
     @Transactional
     void findMemberFetchJoin() {
 
-        IntStream.rangeClosed(1, 30).mapToObj(i -> {
-            Member member = new Member("Member" + i, i);
-            memberRepository.save(member);
-            Team team = new Team("Team" + i);
-            teamRepository.save(team);
-            member.addTeam(team);
-            return member;
-        }).collect(Collectors.toList());
+        createMember();
 
         memberRepository.findMemberFetchJoin().forEach(member -> {
             log.info("memberName : {}", member.getMemberName());
@@ -354,14 +343,7 @@ class MemberRepositoryTest {
     @Transactional
     void findMemberEntityGraph() {
 
-        IntStream.rangeClosed(1, 30).mapToObj(i -> {
-            Member member = new Member("Member" + i, i);
-            memberRepository.save(member);
-            Team team = new Team("Team" + i);
-            teamRepository.save(team);
-            member.addTeam(team);
-            return member;
-        }).collect(Collectors.toList());
+        createMember();
 
         //findAllEntityGraph()
         memberRepository.findAll().forEach(member -> {
@@ -378,6 +360,38 @@ class MemberRepositoryTest {
             log.info("member's Team class : {}", teamMember.getTeam().getClass());
             log.info("member's Team name : {}", teamMember.getTeam().getName());
         });
+
+    }
+
+    private void createMember() {
+        IntStream.rangeClosed(1, 30).mapToObj(i -> {
+            Member member = new Member("Member" + i, i);
+            memberRepository.save(member);
+            Team team = new Team("Team" + i);
+            teamRepository.save(team);
+            member.addTeam(team);
+            return member;
+        }).collect(Collectors.toList());
+    }
+
+
+    @Test
+    @Transactional
+    void findMemberQueryHintReadOnly() {
+
+        // given...
+        createMember();
+        em.flush();
+        em.clear();
+
+        // when...
+        String memberName = "Member1";
+        String updatedMemberName = "Member2";
+        Member readOnlyByMemberName = memberService.findReadOnlyByMemberName(memberName);
+        readOnlyByMemberName.setMemberName("dddd");
+
+        // then..
+        Assertions.assertThat(readOnlyByMemberName.getMemberName()).isEqualTo(updatedMemberName);
 
     }
 }

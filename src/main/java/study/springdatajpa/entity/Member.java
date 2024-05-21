@@ -16,6 +16,8 @@ import java.util.List;
 @NamedQuery(
         name="Member.findByMemberName",
         query="select m from Member m where m.memberName = :memberName")
+//@Setter(AccessLevel.PACKAGE)
+@Setter
 public class Member {
 
     @Id

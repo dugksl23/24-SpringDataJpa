@@ -60,4 +60,5 @@ class MemberJpaRepositoryTest {
             Assertions.assertEquals(member.getAge(), 11);
         });
     }
+
 }

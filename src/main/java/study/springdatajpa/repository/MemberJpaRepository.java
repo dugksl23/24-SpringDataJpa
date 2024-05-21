@@ -73,4 +73,5 @@ public class MemberJpaRepository {
         em.clear();
         return i;
     }
+
 }
