@@ -2,13 +2,10 @@ package study.springdatajpa.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 import study.springdatajpa.entity.Member;
@@ -172,16 +169,14 @@ class MemberRepositoryTest {
     @Commit
     void findByAgeWithPaging() {
 
-        List<Member> collect = IntStream.rangeClosed(1, 31)
-                .mapToObj(i -> {
-                    Member member = new Member("MEMBER" + i, i);
-                    memberRepository.save(member);
-                    Team team = new Team("team" + i);
-                    teamRepository.save(team);
-                    member.addTeam(team);
-                    return member;
-                })
-                .collect(Collectors.toList());
+        List<Member> collect = IntStream.rangeClosed(1, 31).mapToObj(i -> {
+            Member member = new Member("MEMBER" + i, i);
+            memberRepository.save(member);
+            Team team = new Team("team" + i);
+            teamRepository.save(team);
+            member.addTeam(team);
+            return member;
+        }).collect(Collectors.toList());
 
         int currentPage = 3;
         int offset = 0;
@@ -232,16 +227,14 @@ class MemberRepositoryTest {
     void findMemberWithPagingToDto() {
 
 
-        IntStream.rangeClosed(1, 31)
-                .mapToObj(i -> {
-                    Member member = new Member("MEMBER" + i, i);
-                    memberRepository.save(member);
-                    Team team = new Team("team" + i);
-                    teamRepository.save(team);
-                    member.addTeam(team);
-                    return member;
-                })
-                .collect(Collectors.toList());
+        IntStream.rangeClosed(1, 31).mapToObj(i -> {
+            Member member = new Member("MEMBER" + i, i);
+            memberRepository.save(member);
+            Team team = new Team("team" + i);
+            teamRepository.save(team);
+            member.addTeam(team);
+            return member;
+        }).collect(Collectors.toList());
 
         int currentPage = 0;
         int offset = 0;
@@ -301,11 +294,10 @@ class MemberRepositoryTest {
     @Transactional
     @Commit
     public void bulkUpdateAgePlus() {
-        List<Member> collect = IntStream.rangeClosed(0, 30)
-                .mapToObj(i -> {
-                    Member member = new Member("user" + i, 10);
-                    return member;
-                }).collect(Collectors.toList());
+        List<Member> collect = IntStream.rangeClosed(0, 30).mapToObj(i -> {
+            Member member = new Member("user" + i, 10);
+            return member;
+        }).collect(Collectors.toList());
         memberRepository.saveAll(collect);
 
         memberRepository.bulkUpdateAgePlus(10);
@@ -314,4 +306,49 @@ class MemberRepositoryTest {
         Assertions.assertThat(age).isEqualTo(11);
     }
 
+
+    @Test
+    void findMemberLazy() {
+
+        IntStream.rangeClosed(1, 30).mapToObj(i -> {
+            Member member = new Member("Member" + i, i);
+            memberRepository.save(member);
+            Team team = new Team("Team" + i);
+            teamRepository.save(team);
+            member.addTeam(team);
+            return member;
+        }).collect(Collectors.toList());
+
+        memberRepository.findAll().forEach(member -> {
+            log.info("memberName : {}", member.getMemberName());
+            member.getTeamMembers().forEach(teamMember -> {
+                log.info("member's Team class : {}", teamMember.getTeam().getClass());
+                log.info("member's Team name : {}", teamMember.getTeam().getName());
+            });
+        });
+    }
+
+    @Test
+    @Transactional
+    void findMemberFetchJoin() {
+
+        IntStream.rangeClosed(1, 30).mapToObj(i -> {
+            Member member = new Member("Member" + i, i);
+            memberRepository.save(member);
+            Team team = new Team("Team" + i);
+            teamRepository.save(team);
+            member.addTeam(team);
+            return member;
+        }).collect(Collectors.toList());
+
+        memberRepository.findMemberFetchJoin().forEach(member -> {
+            log.info("memberName : {}", member.getMemberName());
+            member.getTeamMembers().forEach(teamMember -> {
+                log.info("member's Team class : {}", teamMember.getTeam().getClass());
+                log.info("member's Team name : {}", teamMember.getTeam().getName());
+            });
+        });
+    }
+
 }
+

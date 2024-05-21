@@ -72,4 +72,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     public int bulkUpdateAgePlus(@Param("age") int age);
 
 
+    @Query(value = "select m from Member m" +
+            " left join fetch m.teamMembers tm" +
+            " left join fetch tm.team t")
+    public List<Member> findMemberFetchJoin();
 }
