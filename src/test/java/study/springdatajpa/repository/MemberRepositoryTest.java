@@ -350,5 +350,38 @@ class MemberRepositoryTest {
         });
     }
 
+    @Test
+    @Transactional
+    void findMemberEntityGraph() {
+
+        IntStream.rangeClosed(1, 30).mapToObj(i -> {
+            Member member = new Member("Member" + i, i);
+            memberRepository.save(member);
+            Team team = new Team("Team" + i);
+            teamRepository.save(team);
+            member.addTeam(team);
+            return member;
+        }).collect(Collectors.toList());
+
+        //findAllEntityGraph()
+        memberRepository.findAll().forEach(member -> {
+            log.info("memberName : {}", member.getMemberName());
+            member.getTeamMembers().forEach(teamMember -> {
+                log.info("member's Team class : {}", teamMember.getTeam().getClass());
+                log.info("member's Team name : {}", teamMember.getTeam().getName());
+            });
+        });
+
+        memberRepository.findAllEntityGraphWithQuery().forEach(member -> {
+            log.info("memberName : {}", member.getMemberName());
+            member.getTeamMembers().forEach(teamMember -> {
+                log.info("member's Team class : {}", teamMember.getTeam().getClass());
+                log.info("member's Team name : {}", teamMember.getTeam().getName());
+            });
+        });
+
+    }
+
 }
+
 
