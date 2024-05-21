@@ -372,16 +372,14 @@ class MemberRepositoryTest {
             });
         });
 
-        memberRepository.findAllEntityGraphWithQuery().forEach(member -> {
-            log.info("memberName : {}", member.getMemberName());
-            member.getTeamMembers().forEach(teamMember -> {
-                log.info("member's Team class : {}", teamMember.getTeam().getClass());
-                log.info("member's Team name : {}", teamMember.getTeam().getName());
-            });
+        Member member1 = memberRepository.findByMemberName("Member1");
+        log.info("member's Team name : {}", member1.getMemberName());
+        member1.getTeamMembers().forEach(teamMember -> {
+            log.info("member's Team class : {}", teamMember.getTeam().getClass());
+            log.info("member's Team name : {}", teamMember.getTeam().getName());
         });
 
     }
-
 }
 
 

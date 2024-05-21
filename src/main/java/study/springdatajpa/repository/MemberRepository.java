@@ -56,7 +56,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     public List<Member> findAllByAge(@Param("age") Integer age);
 
-    public Member findByMemberName(String memberName);
+//    public Member findByMemberName(String memberName);
 
     public Optional<List<Member>> findByAge(@Param("age") Integer age);
 
@@ -84,8 +84,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findAll();
 
     @EntityGraph(attributePaths = {"teamMembers"})
-    @Query("select m from Member m")
-    List<Member>  findAllEntityGraphWithQuery();
+    @Query("select m from Member m where m.memberName = :memberName")
+    Member findByMemberName(@Param("memberName") String memberName);
 
 
 }
