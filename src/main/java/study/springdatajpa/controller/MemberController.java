@@ -46,22 +46,23 @@ public class MemberController {
     }
 
     @GetMapping("/{id}")
-    public String memberDetail(@PathVariable("id") Member member, Model model) {
+    public ApiResultResponse memberDetail(@PathVariable("id") Member member, Model model) {
+        log.info("들어옴");
         // 스프링은 클래스 컨버터를 통해 아래 과정을 지원한다.
 //        model.addAttribute("member", memberService.findById(member.getId()));
-        return member.getMemberName();
+        return new ApiResultResponse(member.getId(), member);
     }
 
     @GetMapping("/memberList")
     @Transactional
-    public Page<Member> memberList(Pageable pageable){
+    public Page<Member> memberList(Pageable pageable) {
         Page<Member> all = memberRepository.findAll(pageable);
         return all;
     }
 
     @GetMapping("/memberDtoList")
     @Transactional
-    public Page<MemberQueryDto> memberDtoList(@PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC) Pageable pageable){
+    public Page<MemberQueryDto> memberDtoList(@PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<Member> all = memberRepository.findAll(pageable);
         log.info("list size : {}", all.getTotalElements());
         Page<MemberQueryDto> map = all.map(member -> new MemberQueryDto(member.getId(), member.getMemberName(), member.getAge()));
@@ -70,14 +71,25 @@ public class MemberController {
 
     @GetMapping("/memberListApiResponse")
     @Transactional
-    public ApiResultResponse memberListApiResponse(@PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC) Pageable pageable){
+    public ApiResultResponse memberListApiResponse(@PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<Member> all = memberRepository.findAll(pageable);
         log.info("list size : {}", all.getTotalElements());
         Page<MemberQueryDto> map = all.map(member -> new MemberQueryDto(member.getId(), member.getMemberName(), member.getAge()));
         return new ApiResultResponse((long) map.getSize(), map);
     }
 
-    @PostConstruct
+    @GetMapping("/mergeTest")
+    @Transactional
+    public ApiResultResponse mergeTest() {
+
+        Member member1 = new Member(":dd", 0);
+        member1.setId(0l);
+        memberRepository.save(member1);
+        return new ApiResultResponse(member1.getId(), member1);
+    }
+
+
+    //    @PostConstruct
     @Transactional
     public void init() {
 //        Member memberA = new Member("member a", 00);

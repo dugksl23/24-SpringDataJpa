@@ -390,8 +390,39 @@ class MemberRepositoryTest {
         Member readOnlyByMemberName = memberService.findReadOnlyByMemberName(memberName);
         readOnlyByMemberName.setMemberName("dddd");
 
+
         // then..
         Assertions.assertThat(readOnlyByMemberName.getMemberName()).isEqualTo(updatedMemberName);
+
+    }
+
+    @Test
+    @Transactional
+    @Commit
+    void findMemberMergeAbdDirtyChecking() {
+
+        // given...
+        String memberName = "Member1";
+        String updatedMemberName = "Member2";
+
+        Member member = new Member(memberName, 20);
+        member.setId(0L);
+        Member save = memberRepository.save(member);
+
+        // when...
+        Optional<Member> byId = memberService.findById(save.getId());
+        // 영속성 컨텍스트로 save()된 엔티티는 별도 엔티티를 반환받지 않더라도 자동으로 해당 pk 값을 설정해서 반환한다.
+        // 다만, 기존 id 값이 설정된 준영속화된 엔티티들은 변경사항에 대하여 1차 캐싱된 이후 해당 값을 반환 받아야 한다.
+        Member persistedMember = byId.get();
+        log.info("member : {}", persistedMember.getMemberName());
+        log.info("member id : {}", persistedMember.getId());
+
+        // 변경감지 테스트
+        persistedMember.setMemberName(updatedMemberName);
+
+        // then..
+        log.info("updated member name : {}", persistedMember.getMemberName());
+        Assertions.assertThat(persistedMember.getMemberName()).isEqualTo(updatedMemberName);
 
     }
 
