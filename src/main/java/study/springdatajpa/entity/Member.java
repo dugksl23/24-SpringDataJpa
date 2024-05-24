@@ -14,11 +14,11 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @NamedQuery(
-        name="Member.findByMemberName",
-        query="select m from Member m where m.memberName = :memberName")
+        name = "Member.findByMemberName",
+        query = "select m from Member m where m.memberName = :memberName")
 //@Setter(AccessLevel.PACKAGE)
 @Setter
-public class Member {
+public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue
@@ -30,6 +30,9 @@ public class Member {
 
     @Column(name = "member_age")
     private int age;
+
+
+
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     // cascade 옵션의 대상은 teamMember table
@@ -52,7 +55,7 @@ public class Member {
 
     // === 연관관계 메서드 ===
     // 해당 객체 뿐 아니라, 상대 객체의 값도 업데이트해주어야 한다.
-    public void changeTeam(Team team){
+    public void changeTeam(Team team) {
         this.getTeamMembers().add(new TeamMember(this, team));
         team.addMember(this);
 
