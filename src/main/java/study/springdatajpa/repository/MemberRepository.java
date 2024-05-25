@@ -1,7 +1,6 @@
 package study.springdatajpa.repository;
 
 
-import jakarta.persistence.LockModeType;
 import jakarta.persistence.QueryHint;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -90,5 +89,14 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
 
 //    @Lock(LockModeType.PESSIMISTIC_WRITE)
 //    List<Member> findAllByMemberName(String name);
+
+
+    List<MemberNameOnlyDtoInterface> findProjectionsByMemberNameContaining(@Param("memberName") String memberName);
+
+    List<MemberNameOnlyDtoClass> findProjectionByMemberNameContaining(@Param("memberName") String memberName);
+
+    <T> List <T> findDynamicProjectionByMemberNameContaining(@Param("memberName") String memberName, Class<T> clazz);
+
+    <T> List <T> findNestedProjectionByMemberNameContaining(@Param("memberName") String memberName, Class<T> clazz);
 
 }

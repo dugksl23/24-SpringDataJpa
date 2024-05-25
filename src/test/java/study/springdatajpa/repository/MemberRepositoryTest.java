@@ -364,7 +364,7 @@ class MemberRepositoryTest {
     }
 
     private void createMember() {
-        IntStream.rangeClosed(1, 30).mapToObj(i -> {
+        IntStream.rangeClosed(1, 10).mapToObj(i -> {
             Member member = new Member("Member" + i, i);
             memberRepository.save(member);
             Team team = new Team("Team" + i);
@@ -429,13 +429,76 @@ class MemberRepositoryTest {
 
     @Test
     @Transactional
-    public void callCustom(){
+    public void callCustom() {
 
         // given...
         createMember();
         String memberName = "Member1";
         List<Member> membersByMemberName = memberRepository.findAllByMemberName(memberName);
     }
+
+
+    @Test
+    void projectionsInterface() {
+
+        // given...
+        createMember();
+
+        // when...
+        List<MemberNameOnlyDtoInterface> memberNames = memberRepository.findProjectionsByMemberNameContaining("Member");
+        log.info("size : {} ", memberNames.size());
+        memberNames.stream().forEach(member -> {
+            log.info("member name : {}", member.getMemberName());
+//            log.info("member name+age : {}", member.getUserNameAndAge());
+
+        });
+    }
+
+    @Test
+    void projectionsClass() {
+        // given...
+        createMember();
+
+        // when...
+        List<MemberNameOnlyDtoClass> memberNames = memberRepository.findProjectionByMemberNameContaining("Member");
+        log.info("size : {} ", memberNames.size());
+        memberNames.stream().forEach(member -> {
+            log.info("member name : {}", member.getMemberName());
+            log.info("member age : {}", member.getAge());
+//            log.info("member name+age : {}", member.getUserNameAndAge());
+        });
+    }
+
+    @Test
+    void dynamicProjectionsClass() {
+        // given...
+        createMember();
+
+        // when...
+        List<MemberNameOnlyDtoClass> memberNames = memberRepository.findDynamicProjectionByMemberNameContaining("member", MemberNameOnlyDtoClass.class);
+        log.info("size : {} ", memberNames.size());
+        memberNames.stream().forEach(member -> {
+            log.info("member name : {}", member.getMemberName());
+            log.info("member age : {}", member.getAge());
+        });
+    }
+
+    @Test
+    void nestedProjectionsClass() { //중첩 프로젝션
+        // given...
+        createMember();
+
+        // when...
+        List<NestedClosedProjections> memberNames = memberRepository.findNestedProjectionByMemberNameContaining("member", NestedClosedProjections.class);
+        log.info("size : {} ", memberNames.size());
+        memberNames.stream().forEach(member -> {
+            log.info("member name : {}", member.getMemberName());
+            member.getTeamMembers().forEach(teamMember -> {
+                log.info("member Team name : {}", teamMember.getTeam().getName());
+            });
+        });
+    }
+
 }
 
 
