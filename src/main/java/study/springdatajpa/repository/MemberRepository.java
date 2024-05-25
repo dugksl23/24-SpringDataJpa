@@ -95,8 +95,27 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
 
     List<MemberNameOnlyDtoClass> findProjectionByMemberNameContaining(@Param("memberName") String memberName);
 
-    <T> List <T> findDynamicProjectionByMemberNameContaining(@Param("memberName") String memberName, Class<T> clazz);
+    <T> List<T> findDynamicProjectionByMemberNameContaining(@Param("memberName") String memberName, Class<T> clazz);
 
-    <T> List <T> findNestedProjectionByMemberNameContaining(@Param("memberName") String memberName, Class<T> clazz);
+    <T> List<T> findNestedProjectionByMemberNameContaining(@Param("memberName") String memberName, Class<T> clazz);
+
+
+    @Query(value = "SELECT * FROM member as m WHERE m.member_name LIKE ?", nativeQuery = true)
+    List<Member> findMemberByNativeQuery(@Param("member_name") String nativeQuery);
+
+    //    @Query(value = "SELECT m.member_id as id, m.member_name as memberName, t.team_name as teamName " +
+//            "FROM member m " +
+//            "LEFT JOIN team_member tm ON m.member_id = tm.member_id " +
+//            "LEFT JOIN team t ON tm.team_id = t.team_id",
+//            countQuery = "SELECT count(*) FROM member",
+//            nativeQuery = true)
+    @Query(value = "SELECT m.member_id as id, m.member_name as memberName, t.team_name as teamName " +
+            "FROM member m " +
+            "LEFT JOIN team_member tm ON m.member_id = tm.member_id " +
+            "LEFT JOIN team t ON tm.team_id = t.team_id",
+            countQuery = "SELECT count(*) FROM member",
+            nativeQuery = true)
+    Page<MemberProjection> findByPagingNativeProjection(Pageable pageable);
+
 
 }

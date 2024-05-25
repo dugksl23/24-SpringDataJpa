@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 import study.springdatajpa.entity.Member;
@@ -363,6 +364,7 @@ class MemberRepositoryTest {
 
     }
 
+
     private void createMember() {
         IntStream.rangeClosed(1, 10).mapToObj(i -> {
             Member member = new Member("Member" + i, i);
@@ -496,6 +498,37 @@ class MemberRepositoryTest {
             member.getTeamMembers().forEach(teamMember -> {
                 log.info("member Team name : {}", teamMember.getTeam().getName());
             });
+        });
+    }
+
+    @Test
+    void nativeQueryTest() { //중첩 프로젝션
+        // given...
+        createMember();
+
+        // when...
+        List<Member> member1 = memberRepository.findMemberByNativeQuery("Member1");
+        log.info("size : {} ", member1.size());
+        member1.stream().forEach(member -> {
+            log.info("member name : {}", member.getMemberName());
+        });
+    }
+
+    @Test
+    @Transactional
+    @Commit
+    void nativeQueryPagingTest() { //중첩 프로젝션
+        // given...
+        createMember();
+
+        // when...
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        Page<MemberProjection> byPagingNativeProjection = memberRepository.findByPagingNativeProjection(pageRequest);
+        log.info("size : {} ", byPagingNativeProjection.getSize());
+        byPagingNativeProjection.stream().forEach(member -> {
+            log.info("member name : {}", member.getId());
+            log.info("member name : {}", member.getMemberName());
+            log.info("member Team name : {}", member.getTeamName());
         });
     }
 
