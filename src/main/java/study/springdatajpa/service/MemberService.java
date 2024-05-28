@@ -1,6 +1,7 @@
 package study.springdatajpa.service;
 
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +23,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
-    private final TeamMemberRepository teamMemberRepository;
+    private final EntityManager em;
 
     @Transactional
     public Member signUpMember(Member member) {
@@ -69,5 +70,15 @@ public class MemberService {
 
     public Member findReadOnlyByMemberName(String memberName) {
         return memberRepository.findReadOnlyByMemberName(memberName);
+    }
+
+
+    @Transactional
+    public void memberBulkUpdate(int age){
+        memberRepository.bulkUpdateAgePlus(age);
+
+        em.flush();
+        em.clear();
+
     }
 }

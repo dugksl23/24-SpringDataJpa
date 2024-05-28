@@ -304,10 +304,14 @@ class MemberRepositoryTest {
         }).collect(Collectors.toList());
         memberRepository.saveAll(collect);
 
-        memberRepository.bulkUpdateAgePlus(10);
-        int age = memberRepository.findById(collect.get(0).getId()).get().getAge();
-        log.info("age : {}", age);
-        Assertions.assertThat(age).isEqualTo(11);
+        memberService.memberBulkUpdate(10);
+
+        memberRepository.findAll().forEach(member ->{
+            log.info("member name : {}", member.getMemberName());
+            log.info("age : {}", member.getAge());
+            Assertions.assertThat(member.getAge()).isEqualTo(11);
+        });
+
     }
 
 

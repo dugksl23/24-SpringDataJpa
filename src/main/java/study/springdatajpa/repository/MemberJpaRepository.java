@@ -69,6 +69,7 @@ public class MemberJpaRepository {
                 .setParameter("age", age)
                 .executeUpdate();
 
+        // 영속성 컨텍스트와의 동기화를 위해서, flush() 와 clear()　코드 필요.
         em.flush();
         em.clear();
         return i;
